@@ -35,3 +35,8 @@ Otherwise, create a material parameter collection if you don't already have one 
 
 > [!WARNING]
 > Click `Set as Default` or your settings will potentially revert
+
+# Changelog
+
+## 1.0.0
+* Initial Commit
