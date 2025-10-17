@@ -15,6 +15,7 @@ public class ForwardRender : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"UnrealEd",
+				"DeveloperSettings",
 			}
 			);
 	}

@@ -4,6 +4,7 @@
 #include "TickEditorLightVector.h"
 
 #include "EngineUtils.h"
+#include "ForwardRenderSettings.h"
 #include "Components/LightComponent.h"
 #include "Engine/DirectionalLight.h"
 #include "Materials/MaterialParameterCollection.h"
@@ -13,6 +14,13 @@
 
 void UTickEditorLightVector::Tick(float DeltaTime)
 {
+	const UForwardRenderSettings* Settings = GetDefault<UForwardRenderSettings>();
+	
+	if (!Settings->bLightVectorEnabled)
+	{
+		return;
+	}
+	
 	if (!GEditor)
 	{
 		return;
@@ -28,9 +36,15 @@ void UTickEditorLightVector::Tick(float DeltaTime)
 	int32 NumLights = 0;
 	for (TActorIterator<ADirectionalLight> It(World); It; ++It)
 	{
-		DirectionalLight = *It;
+		if (!DirectionalLight)
+		{
+			DirectionalLight = *It;
+			if (!Settings->bWarnOnMultipleDirectionalLights)
+			{
+				break;
+			}
+		}
 		NumLights++;
-		break;
 	}
 
 	if (!DirectionalLight)
@@ -38,8 +52,10 @@ void UTickEditorLightVector::Tick(float DeltaTime)
 		return;
 	}
 
-	if (NumLights > 1)
+	if (Settings->bWarnOnMultipleDirectionalLights && !bHasWarned && NumLights > 1)
 	{
+		bHasWarned = true;
+		
 		FMessageLog("TickEditorLightVector").Warning()
 			->AddToken(FTextToken::Create(FText::FromString(TEXT("Multiple Directional Lights found in the scene. TickEditorLightVector will only use the first one found."))))
 			->AddToken(FTextToken::Create(FText::FromString(World->GetMapName())));
@@ -47,7 +63,7 @@ void UTickEditorLightVector::Tick(float DeltaTime)
 
 	const FVector LightDirWS = DirectionalLight->GetLightComponent()->GetForwardVector();
 
-	const UMaterialParameterCollection* MPC = Cast<UMaterialParameterCollection>(MPCPath.TryLoad());
+	const UMaterialParameterCollection* MPC = Cast<UMaterialParameterCollection>(Settings->LightVectorMPCPath.TryLoad());
 	if (!MPC)
 	{
 		return;
@@ -56,6 +72,11 @@ void UTickEditorLightVector::Tick(float DeltaTime)
 	UMaterialParameterCollectionInstance* Instance = World->GetParameterCollectionInstance(MPC);
 	if (Instance)
 	{
-		Instance->SetVectorParameterValue(ParameterName, FLinearColor(LightDirWS));
+		Instance->SetVectorParameterValue(Settings->LightVectorParameterName, FLinearColor(Settings->bInvertLightVector ? -LightDirWS : LightDirWS));
 	}
+}
+
+bool UTickEditorLightVector::IsTickable() const
+{
+	return GetDefault<UForwardRenderSettings>()->bLightVectorEnabled;
 }

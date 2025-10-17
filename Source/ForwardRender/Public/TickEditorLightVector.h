@@ -17,20 +17,11 @@ class FORWARDRENDER_API UTickEditorLightVector : public UObject, public FTickabl
 	GENERATED_BODY()
 
 public:
-	/** Path to the Material Parameter Collection asset */
-	UPROPERTY(Config, EditAnywhere, Category="Light Vector")
-	FSoftObjectPath MPCPath;
-
-	/** Name of the vector parameter to update */
-	UPROPERTY(Config, EditAnywhere, Category="Light Vector")
-	FName ParameterName = TEXT("LightVector");
-
-	/** Warn if multiple directional lights are found */
-	UPROPERTY(Config, EditAnywhere, Category="Light Vector")
-	bool bWarnOnMultipleLights = true;
+	UPROPERTY()
+	bool bHasWarned = false;
 	
 	// FTickableEditorObject
 	virtual void Tick(float DeltaTime) override;
 	virtual TStatId GetStatId() const override { RETURN_QUICK_DECLARE_CYCLE_STAT(UTickEditorLightVector, STATGROUP_Tickables); }
-	virtual bool IsTickable() const override { return true; }
+	virtual bool IsTickable() const override;
 };
