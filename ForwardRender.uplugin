@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0.0",
+	"FriendlyName": "ForwardRender",
+	"Description": "Implements mobile forward rendering quality toggle and editor viewport light vector updates ( https://blog.daftsoftware.com/unreal-perf-maxing/ )",
+	"Category": "Editor",
+	"CreatedBy": "Jared Taylor (Vaei)",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "ForwardRender",
+			"Type": "EditorNoCommandlet",
+			"LoadingPhase": "EarliestPossible"
+		}
+	]
+}
