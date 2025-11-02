@@ -38,5 +38,8 @@ Otherwise, create a material parameter collection if you don't already have one 
 
 # Changelog
 
+### 1.0.1
+* Disable preview platform on Linux (not supported)
+
 ## 1.0.0
 * Initial Commit
