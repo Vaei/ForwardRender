@@ -42,6 +42,7 @@ void FForwardRenderModule::ShutdownModule()
 
 void FForwardRenderModule::OnMapChange(uint32)
 {
+#if PLATFORM_WINDOWS
 	// Force the editor into DirectX Mobile Preview on ES31
 	// Stole these settings from Engine/Config/Windows/DataDrivenPlatformInfo.ini
 	const FPreviewPlatformInfo PreviewPlatform(
@@ -53,8 +54,10 @@ void FForwardRenderModule::OnMapChange(uint32)
 		true,
 		FName("PCD3D_ES3_1_Preview")
 		);
-        
+
+
 	GEditor->SetPreviewPlatform(PreviewPlatform, false);
+#endif
 }
 
 #undef LOCTEXT_NAMESPACE
