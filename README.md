@@ -38,6 +38,9 @@ Otherwise, create a material parameter collection if you don't already have one 
 
 # Changelog
 
+### 1.0.2
+* Set mobile preview that is supported by 5.8
+
 ### 1.0.1
 * Disable preview platform on Linux (not supported)
 
