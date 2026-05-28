@@ -2,26 +2,29 @@
 
 #include "ForwardRender.h"
 
+#include "Editor/EditorEngine.h"
+#include "DataDrivenShaderPlatformInfo.h"
+
 #define LOCTEXT_NAMESPACE "FForwardRenderModule"
 
 void FForwardRenderModule::StartupModule()
 {
 	// Hook to map changes to toggle back to the mobile preview.
 	FEditorDelegates::MapChange.AddRaw(this, &FForwardRenderModule::OnMapChange);
-
+	
 	// Hotpatch Engine/Config/Windows/DataDrivenPlatformInfo.ini, we find section
 	// [ShaderPlatform PCD3D_ES3_1] and then look for bSupportsDistanceFields = false
 	// and patch the value onto true, otherwise our lighting will be black due to no mobile DF support.
 	const FString IniPath = FPaths::Combine(FPaths::EngineDir(), TEXT("Config/Windows/DataDrivenPlatformInfo.ini"));
 	FString FileContent;
-
+	
 	if (FPaths::FileExists(IniPath) && FFileHelper::LoadFileToString(FileContent, *IniPath))
 	{
 		const FString SectionHeader = TEXT("[ShaderPlatform PCD3D_ES3_1]");
 		const FString Key = TEXT("bSupportsDistanceFields");
 		const FString OldLine = Key + TEXT(" = false");
 		const FString NewLine = Key + TEXT(" = true");
-
+	
 		const int32 SectionStart = FileContent.Find(SectionHeader, ESearchCase::IgnoreCase);
 		if (SectionStart != INDEX_NONE)
 		{
@@ -45,16 +48,22 @@ void FForwardRenderModule::OnMapChange(uint32)
 #if PLATFORM_WINDOWS
 	// Force the editor into DirectX Mobile Preview on ES31
 	// Stole these settings from Engine/Config/Windows/DataDrivenPlatformInfo.ini
+	const EShaderPlatform ESShaderPlatform = FDataDrivenShaderPlatformInfo::GetShaderPlatformFromName(FName("PCD3D_ES3_1_Preview"));
+	if (ESShaderPlatform == SP_NumPlatforms)
+	{
+		return;
+	}
+
 	const FPreviewPlatformInfo PreviewPlatform(
 		ERHIFeatureLevel::ES3_1,
-		SP_PCD3D_ES3_1,
+		ESShaderPlatform,
 		FName("PC"),
 		FName("PCD3D_ES31"),
 		FName("Windows_Preview_ES31"),
 		true,
-		FName("PCD3D_ES3_1_Preview")
+		FName("PCD3D_ES3_1_Preview"),
+		FText::FromString("PC D3D Mobile")
 		);
-
 
 	GEditor->SetPreviewPlatform(PreviewPlatform, false);
 #endif

@@ -16,6 +16,7 @@ public class ForwardRender : ModuleRules
 				"Engine",
 				"UnrealEd",
 				"DeveloperSettings",
+				"RHI",  // FDataDrivenShaderPlatformInfo::GetShaderPlatformFromName
 			}
 			);
 	}
